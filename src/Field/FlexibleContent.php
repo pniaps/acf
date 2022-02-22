@@ -5,7 +5,7 @@ namespace Corcel\Acf\Field;
 use Corcel\Acf\FieldFactory;
 use Corcel\Acf\FieldInterface;
 use Corcel\Model;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 /**
@@ -74,8 +74,7 @@ class FlexibleContent extends BasicField implements FieldInterface
      */
     protected function fetchPostsMeta($fieldName, Model $post)
     {
-        $builder = $this->postMeta->where($this->getKeyName(), $this->post->getKey());
-        $builder->where('meta_key', 'like', "{$fieldName}_%");
+        $builder = $post->meta()->where('meta_key', 'like', "{$fieldName}_%");
 
         return $builder;
     }

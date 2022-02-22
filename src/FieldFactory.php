@@ -5,12 +5,12 @@ namespace Corcel\Acf;
 use Corcel\Acf\Field\Boolean;
 use Corcel\Acf\Field\DateTime;
 use Corcel\Acf\Field\File;
+use Corcel\Acf\Field\FlexibleContent;
 use Corcel\Acf\Field\Gallery;
 use Corcel\Acf\Field\Image;
 use Corcel\Acf\Field\PageLink;
 use Corcel\Acf\Field\PostObject;
 use Corcel\Acf\Field\Repeater;
-use Corcel\Acf\Field\FlexibleContent;
 use Corcel\Acf\Field\Select;
 use Corcel\Acf\Field\Term;
 use Corcel\Acf\Field\Text;
@@ -108,7 +108,8 @@ class FieldFactory
             case 'flexible_content':
                 $field = new FlexibleContent($post);
                 break;
-            default: return null;
+            default:
+                throw new \InvalidArgumentException('The field type ['.$type.'] is invalid');
         }
 
         $field->process($name);

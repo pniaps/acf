@@ -2,13 +2,8 @@
 
 namespace Corcel\Acf\Field;
 
-use Corcel\Model\Post;
 use Corcel\Model;
-use Corcel\Model\Meta\PostMeta;
-use Corcel\Model\Term;
-use Corcel\Model\Meta\TermMeta;
-use Corcel\Model\User;
-use Corcel\Model\Meta\UserMeta;
+use Corcel\Model\Post;
 
 /**
  * Class BasicField.
@@ -21,11 +16,6 @@ abstract class BasicField
      * @var Model
      */
     protected $post;
-
-    /**
-     * @var PostMeta
-     */
-    protected $postMeta;
 
     /**
      * @var string
@@ -60,16 +50,6 @@ abstract class BasicField
     public function __construct(Model $post)
     {
         $this->post = $post;
-
-        if ($post instanceof Post) {
-            $this->postMeta = new PostMeta();
-        } elseif ($post instanceof Term) {
-            $this->postMeta = new TermMeta();
-        } elseif ($post instanceof User) {
-            $this->postMeta = new UserMeta();
-        }
-
-        $this->postMeta->setConnection($post->getConnectionName());
     }
 
     /**
@@ -81,13 +61,9 @@ abstract class BasicField
      */
     public function fetchValue($field)
     {
-        $postMeta = $this->postMeta->where(
-            $this->getKeyName(),
-            $this->post->getKey()
-        )->where('meta_key', $field)->first();
+        $value = $this->post->meta->$field;
 
-        if (isset($postMeta->meta_value) and ! is_null($postMeta->meta_value)) {
-            $value = $postMeta->meta_value;
+        if (isset($value) and ! is_null($value)) {
             if ($array = @unserialize($value) and is_array($array)) {
                 $this->value = $array;
 
@@ -109,15 +85,7 @@ abstract class BasicField
     {
         $this->name = $fieldName;
 
-        $postMeta = $this->postMeta->where($this->getKeyName(), $this->post->getKey())
-            ->where('meta_key', '_' . $fieldName)
-            ->first();
-
-        if (!$postMeta) {
-            return null;
-        }
-
-        $this->key = $postMeta->meta_value;
+        $this->key = $this->post->meta->{'_' . $fieldName};
 
         return $this->key;
     }
@@ -130,10 +98,11 @@ abstract class BasicField
     public function fetchFieldType($fieldKey)
     {
         $post = Post::on($this->post->getConnectionName())
-                   ->orWhere(function ($query) use ($fieldKey) {
-                       $query->where('post_name', $fieldKey);
-                       $query->where('post_type', 'acf-field');
-                   })->first();
+            ->without('meta')
+            ->orWhere(function ($query) use ($fieldKey) {
+                $query->where('post_name', $fieldKey);
+                $query->where('post_type', 'acf-field');
+            })->first();
 
         if ($post) {
             $fieldData = unserialize($post->post_content);
@@ -144,23 +113,6 @@ abstract class BasicField
 
         return null;
     }
-
-    /**
-     * Get the name of the key for the field.
-     *
-     * @return string
-     */
-    public function getKeyName()
-    {
-        if ($this->post instanceof Post) {
-            return 'post_id';
-        } elseif ($this->post instanceof Term) {
-            return 'term_id';
-        } elseif ($this->post instanceof User) {
-            return 'user_id';
-        }
-    }
-
 
     /**
      * @return mixed

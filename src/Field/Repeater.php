@@ -5,7 +5,7 @@ namespace Corcel\Acf\Field;
 use Corcel\Acf\FieldFactory;
 use Corcel\Acf\FieldInterface;
 use Corcel\Model\Post;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 /**
@@ -76,11 +76,7 @@ class Repeater extends BasicField implements FieldInterface
     {
         $count = (int) $this->fetchValue($fieldName);
         
-        if ($this->postMeta instanceof \Corcel\Model\Meta\TermMeta) {
-            $builder = $this->postMeta->where('term_id', $post->term_id);
-        } else {
-            $builder = $this->postMeta->where('post_id', $post->ID);
-        }
+        $builder = $post->meta();
 
         $builder->where(function ($query) use ($count, $fieldName) {
             foreach (range(0, $count - 1) as $i) {
