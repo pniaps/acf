@@ -80,7 +80,30 @@ First we should create the fields classes and the test cases. After we have to s
 
  Some fields are still missing (check table below and contribute).
 
-## Fields
+## Groups
+
+``Group`` class can be used to interact with all fields of a group, for example when reading a posts custom fields or when updating it, this way, only one extra query is needed, which loads the groups's fields.
+
+```php
+// Get a group
+$group = Group::published()->get();
+$group = Group::find(60);
+
+// Get all fields of a group
+$fields = $group->fields();
+
+//Get all custom fields of a Post
+$post = Post::find(30);
+$postFields = $group->getPostFields($post);
+
+//Update Post fields
+$group->savePostFields($post, [
+    'field_name_1' => 'Field 1 value',
+    'field_name_2' => 'Field 2 value',
+]);
+```
+
+## Field types
 
 | Field             | Status    | Developer                             | Returns |
 |-------------------|-----------|---------------------------------------| --------|
