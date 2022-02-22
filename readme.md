@@ -21,10 +21,11 @@ For more information about how Corcel works please visit [the repository](http:/
 
 # Version Compatibility
 
- Corcel    | Laravel  | PHP
-:----------|:---------|:----------
- `^4.0`    | 7.x      | `>=7.2`
- `^5.0`    | 8.x      | `>=7.3`
+| Corcel | Laravel | PHP       |
+|:-------|:--------|:----------|
+| `^4.0` | 7.x     | `>=7.2`   |
+| `^5.0` | 8.x     | `>=7.3`   |
+| `^6.0` | 9.x     | `>=8.0.2` |
 
 # Installation
 
@@ -129,7 +130,7 @@ To run the phpunit tests, execute `phpunit` (if you have a global PHPUnit execut
 ./vendor/bin/phpunit
 ```
 
-You should import the `database.sql` file to a database inside your local environment to make the tests working. Just unzip the `tests/config/database.sql.zip` file and set the database, user and password fields in `tests/config/bootstrap.php`.
+You should import the `database.sql` file to a database inside your local environment to make the tests working. Just unzip the `tests/config/database.sql.zip` and import in a schema named `corcel_acf` and create a user with name and password `corcel_acf`. I you need to change the database, user and password edit file `tests/config/bootstrap.php`.
 
 > If you want to access the WordPress Admin Panel just use username as `admin` and password `123456`.
 

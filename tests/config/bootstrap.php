@@ -7,7 +7,7 @@ require __DIR__.'/../../vendor/autoload.php';
 
 $capsule = \Corcel\Database::connect($params = [
     'database' => 'corcel_acf',
-    'username' => 'root',
-    'password' => '',
+    'username' => 'corcel_acf',
+    'password' => 'corcel_acf',
     'host' => '127.0.0.1',
 ]);
