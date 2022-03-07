@@ -15,8 +15,9 @@ use Corcel\Acf\Field\Select;
 use Corcel\Acf\Field\Term;
 use Corcel\Acf\Field\Text;
 use Corcel\Acf\Field\User;
-use Corcel\Model;
+use Corcel\Model\Post;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 
 /**
  * Class FieldFactory.
@@ -36,17 +37,15 @@ class FieldFactory
      *
      * @return FieldInterface|Collection|string
      */
-    public static function make($name, Model $post, $type = null)
+    public static function make($name, Post $post, $type = null)
     {
         if (null === $type) {
-            $fakeText = new Text($post);
-            $key = $fakeText->fetchFieldKey($name);
-
+            $key = $post->meta->{'_' . $name};
             if ($key === null) { // Field does not exist
-                return null;
+                throw new InvalidArgumentException('Field ['.$name.'] not found in post ['.$post->post_title.']');
             }
 
-            $type = $fakeText->fetchFieldType($key);
+            $type = static::fetchFieldType($post, $key);
         }
 
 
@@ -115,5 +114,29 @@ class FieldFactory
         $field->process($name);
 
         return $field;
+    }
+
+    /**
+     * @param string $fieldKey
+     *
+     * @return string|null
+     */
+    public static function fetchFieldType(Post $post, string $fieldKey)
+    {
+        $post = Post::on($post->getConnectionName())
+            ->without('meta')
+            ->orWhere(function ($query) use ($fieldKey) {
+                $query->where('post_name', $fieldKey);
+                $query->where('post_type', 'acf-field');
+            })->first();
+
+        if ($post) {
+            $fieldData = unserialize($post->post_content);
+            $type = isset($fieldData['type']) ? $fieldData['type'] : 'text';
+
+            return $type;
+        }
+
+        return null;
     }
 }

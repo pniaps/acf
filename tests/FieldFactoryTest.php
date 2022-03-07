@@ -13,8 +13,9 @@ class FieldFactoryTest extends PHPUnit\Framework\TestCase
     public function testInvalidFieldName()
     {
         $post = Post::find(11);
+
+        $this->expectException(InvalidArgumentException::class);
         $invalidField = FieldFactory::make('invalid_field', $post);
-        $this->assertNull($invalidField);
     }
 
     public function testTextField()
