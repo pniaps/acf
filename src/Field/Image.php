@@ -2,10 +2,12 @@
 
 namespace Corcel\Acf\Field;
 
-use Corcel\Model\Post;
 use Corcel\Model\Meta\PostMeta;
-use Corcel\Acf\FieldInterface;
+use Corcel\Model\Post;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 /**
  * Class Image.
@@ -150,7 +152,7 @@ class Image extends BasicField
         $metaRows = PostMeta::whereIn("post_id", $ids)
             ->where('meta_key', '_wp_attachment_metadata')
             ->get();
-            
+
         foreach ($metaRows as $meta) {
             $metadataValues[$meta->post_id] = unserialize($meta->meta_value);
         }
@@ -167,5 +169,36 @@ class Image extends BasicField
         $this->width = $imageData['width'];
         $this->height = $imageData['height'];
         $this->sizes = $imageData['sizes'];
+    }
+
+    public function update($value)
+    {
+        if (Str::startsWith($value, 'data:image'))
+        {
+            // 0. Make the image
+            $image = \Intervention\Image\Facades\Image::make($value)->encode('jpg', 90);
+
+            // 1. Generate a filename.
+            $name = md5($value.time()).'.jpg';
+            $path = storage_path('temp/'.$name);
+
+            // 2. Store the image on disk.
+            $image->save($path);
+
+            // 3. Upload to wordpress
+            $response = Http::attach('file', file_get_contents($path), $name)
+                ->withBasicAuth(env('WORDPRESS_API_USERNAME'),env('WORDPRESS_API_PASSWORD'))
+                ->post(env('WORDPRESS_API_ENDPOINT'));
+
+            // 4. Delete local image after uploaded to wordpress
+            File::delete($path);
+
+            // 5. Delete old image from wordpress
+            Http::withBasicAuth(env('WORDPRESS_API_USERNAME'),env('WORDPRESS_API_PASSWORD'))
+                ->delete(env('WORDPRESS_API_ENDPOINT').'/'.$this->value, ['force' => true]);
+
+            $value = $response->json('id');
+        }
+        parent::update($value);
     }
 }

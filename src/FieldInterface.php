@@ -2,8 +2,6 @@
 
 namespace Corcel\Acf;
 
-use Corcel\Model\Post;
-
 /**
  * Interface FieldInterface.
  *
@@ -20,6 +18,14 @@ interface FieldInterface
      * @return mixed
      */
     public function get();
+
+    /**
+     * Changes the value of the field
+     * @param $value
+     *
+     * @return mixed
+     */
+    public function update($value);
 }
 
 /*

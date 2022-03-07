@@ -3,9 +3,12 @@
 /**
  * @author Junior Grossi <juniorgro@gmail.com>
  */
+
+use Corcel\Database;
+
 require __DIR__.'/../../vendor/autoload.php';
 
-$capsule = \Corcel\Database::connect($params = [
+$capsule = Database::connect($params = [
     'database' => 'corcel_acf',
     'username' => 'corcel_acf',
     'password' => 'corcel_acf',

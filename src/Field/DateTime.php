@@ -3,8 +3,6 @@
 namespace Corcel\Acf\Field;
 
 use Carbon\Carbon;
-use Corcel\Acf\FieldInterface;
-use Corcel\Model\Post;
 
 /**
  * Class DateTime.
@@ -50,5 +48,16 @@ class DateTime extends BasicField
         } elseif (preg_match('/^\d{2}:\d{2}:\d{2}$/', $dateString)) { // 17:30:00
             return 'H:i:s';
         }
+    }
+
+    public function update($value)
+    {
+        if ($this->type == 'date_picker' && \Illuminate\Support\Carbon::canBeCreatedFromFormat($value, 'Y-m-d')) {
+            $value = Carbon::createFromFormat('Y-m-d', $value)->format('Ymd');
+        }
+        if ($this->type == 'date_time_picker') {
+            $value = \Illuminate\Support\Carbon::parse($value)->toDateTimeString();
+        }
+        parent::update($value);
     }
 }

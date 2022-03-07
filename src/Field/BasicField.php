@@ -97,4 +97,35 @@ abstract class BasicField implements FieldInterface
     {
         return $this->get();
     }
+
+    public function update($value)
+    {
+        $this->value = $value;
+        $this->createOrUpdatePostMeta($this->post, $this->name, $value);
+        $this->createOrUpdatePostMeta($this->post, '_' . $this->name, $this->key);
+    }
+
+    /**
+     * Creates or updates the post meta for the ACF fields
+     *
+     * @param Post   $post  Post to save custom field
+     * @param string $key   The custom field name
+     * @param mixed  $value The custom field value
+     *
+     * @return void
+     */
+    private function createOrUpdatePostMeta(Post $post, $key, $value)
+    {
+        $meta = $post->meta->first(function ($meta) use ($key) {
+            return $meta->meta_key === $key;
+        });
+        if ($meta) {
+            $meta->update(['meta_value' => $value]);
+        } else {
+            $post->meta()->create([
+                'meta_key' => $key,
+                'meta_value' => $value,
+            ]);
+        }
+    }
 }
