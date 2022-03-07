@@ -2,7 +2,7 @@
 
 namespace Corcel\Acf\Field;
 
-use Corcel\Model;
+use Corcel\Acf\FieldInterface;
 use Corcel\Model\Post;
 
 /**
@@ -10,10 +10,10 @@ use Corcel\Model\Post;
  *
  * @author Junior Grossi <juniorgro@gmail.com>
  */
-abstract class BasicField
+abstract class BasicField implements FieldInterface
 {
     /**
-     * @var Model
+     * @var Post
      */
     protected $post;
 
@@ -47,9 +47,13 @@ abstract class BasicField
      *
      * @param Post $post
      */
-    public function __construct(Model $post)
+    public function __construct(Post $post, string $name)
     {
         $this->post = $post;
+
+        $this->name = $name;
+
+        $this->key = $this->post->meta->{'_' . $this->name};
     }
 
     /**
@@ -59,35 +63,31 @@ abstract class BasicField
      *
      * @return array|string
      */
-    public function fetchValue($field)
+    public function fetchValue()
     {
-        $value = $this->post->meta->$field;
+        $value = $this->post->meta->{$this->name};
 
         if (isset($value) and ! is_null($value)) {
             if ($array = @unserialize($value) and is_array($array)) {
                 $this->value = $array;
-
-                return $array;
             } else {
                 $this->value = $value;
-
-                return $value;
             }
         }
+        return $this->value;
     }
 
     /**
-     * @param string $fieldName
+     * Sets the field type
+     * @param $type
      *
-     * @return string
+     * @return static
      */
-    public function fetchFieldKey($fieldName)
+    public function setFieldType($type)
     {
-        $this->name = $fieldName;
+        $this->type = $type;
 
-        $this->key = $this->post->meta->{'_' . $fieldName};
-
-        return $this->key;
+        return $this;
     }
 
     /**

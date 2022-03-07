@@ -2,7 +2,6 @@
 
 namespace Corcel\Acf\Field;
 
-use Corcel\Acf\FieldInterface;
 use Corcel\Model\Post;
 use Illuminate\Support\Collection;
 
@@ -11,7 +10,7 @@ use Illuminate\Support\Collection;
  *
  * @author Junior Grossi <juniorgro@gmail.com>
  */
-class Gallery extends Image implements FieldInterface
+class Gallery extends Image
 {
     /**
      * @var array
@@ -26,9 +25,9 @@ class Gallery extends Image implements FieldInterface
     /**
      * @param $field
      */
-    public function process($field)
+    public function process()
     {
-        if ($ids = $this->fetchValue($field)) {
+        if ($ids = $this->fetchValue()) {
             $connection = $this->post->getConnectionName();
 
             $ids_ordered = implode(',', $ids);
@@ -40,7 +39,7 @@ class Gallery extends Image implements FieldInterface
 
             foreach ($attachments as $attachment) {
                 if (array_key_exists($attachment->ID, $metaDataValues)) {
-                    $image = new Image($this->post);
+                    $image = new Image($this->post, '');
                     $image->fillFields($attachment);
                     $image->fillMetadataFields($metaDataValues[$attachment->ID]);
                     $this->images[] = $image;

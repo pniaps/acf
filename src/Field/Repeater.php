@@ -3,7 +3,6 @@
 namespace Corcel\Acf\Field;
 
 use Corcel\Acf\FieldFactory;
-use Corcel\Acf\FieldInterface;
 use Corcel\Model\Post;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -13,7 +12,7 @@ use Illuminate\Support\Collection;
  *
  * @author Junior Grossi <juniorgro@gmail.com>
  */
-class Repeater extends BasicField implements FieldInterface
+class Repeater extends BasicField
 {
     /**
      * @var Collection
@@ -23,12 +22,10 @@ class Repeater extends BasicField implements FieldInterface
     /**
      * @param string $fieldName
      */
-    public function process($fieldName)
+    public function process()
     {
-        $this->name = $fieldName;
-
-        $builder = $this->fetchPostsMeta($fieldName, $this->post);
-        $fields = $this->fetchFields($fieldName, $builder);
+        $builder = $this->fetchPostsMeta($this->name, $this->post);
+        $fields = $this->fetchFields($this->name, $builder);
 
         $this->fields = new Collection($fields);
     }
@@ -74,8 +71,8 @@ class Repeater extends BasicField implements FieldInterface
      */
     protected function fetchPostsMeta($fieldName, $post)
     {
-        $count = (int) $this->fetchValue($fieldName);
-        
+        $count = (int) $this->fetchValue();
+
         $builder = $post->meta();
 
         $builder->where(function ($query) use ($count, $fieldName) {

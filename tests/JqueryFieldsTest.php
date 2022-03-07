@@ -23,29 +23,29 @@ class JqueryFieldsTests extends PHPUnit\Framework\TestCase
 
     public function testDatePickerField()
     {
-        $date = new DateTime($this->post);
-        $date->process('fake_date_picker');
+        $date = new DateTime($this->post, 'fake_date_picker');
+        $date->process();
         $this->assertEquals('10/13/2016', $date->get()->format('m/d/Y'));
     }
 
     public function testDateTimePickerField()
     {
-        $dateTime = new DateTime($this->post);
-        $dateTime->process('fake_date_time_picker');
+        $dateTime = new DateTime($this->post, 'fake_date_time_picker');
+        $dateTime->process();
         $this->assertEquals('05:06:08/19-10:2016', $dateTime->get()->format('s:i:H/d-m:Y')); // 2016-10-19 08:06:05
     }
 
     public function testTimePickerField()
     {
-        $time = new DateTime($this->post);
-        $time->process('fake_time_picker');
+        $time = new DateTime($this->post, 'fake_time_picker');
+        $time->process();
         $this->assertEquals('00/17/30', $time->get()->format('s/H/i')); // 17:30:00
     }
 
     public function testColorPickerField()
     {
-        $color = new Text($this->post);
-        $color->process('fake_color_picker');
+        $color = new Text($this->post, 'fake_color_picker');
+        $color->process();
         $this->assertEquals('#7263a8', $color->get());
     }
 }

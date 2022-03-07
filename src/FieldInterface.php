@@ -12,9 +12,9 @@ use Corcel\Model\Post;
 interface FieldInterface
 {
     /**
-     * @param string $fieldName
+     * Sets the field value
      */
-    public function process($fieldName);
+    public function process();
 
     /**
      * @return mixed

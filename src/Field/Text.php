@@ -2,15 +2,12 @@
 
 namespace Corcel\Acf\Field;
 
-use Corcel\Acf\FieldInterface;
-use Corcel\Model\Post;
-
 /**
  * Class Text.
  *
  * @author Junior Grossi <juniorgro@gmail.com>
  */
-class Text extends BasicField implements FieldInterface
+class Text extends BasicField
 {
     /**
      * @var string
@@ -20,9 +17,9 @@ class Text extends BasicField implements FieldInterface
     /**
      * @param string $field
      */
-    public function process($field)
+    public function process()
     {
-        $this->value = $this->fetchValue($field);
+        $this->value = $this->fetchValue();
     }
 
     /**

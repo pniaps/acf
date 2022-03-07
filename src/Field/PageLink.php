@@ -2,14 +2,12 @@
 
 namespace Corcel\Acf\Field;
 
-use Corcel\Acf\FieldInterface;
-
 /**
  * Class PageLink.
  *
  * @author Junior Grossi <juniorgro@gmail.com>
  */
-class PageLink extends PostObject implements FieldInterface
+class PageLink extends PostObject
 {
     /**
      * @return string

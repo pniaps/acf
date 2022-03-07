@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Collection;
  *
  * @author Junior Grossi
  */
-class Image extends BasicField implements FieldInterface
+class Image extends BasicField
 {
     /**
      * @var int
@@ -57,9 +57,9 @@ class Image extends BasicField implements FieldInterface
     /**
      * @param string $field
      */
-    public function process($field)
+    public function process()
     {
-        $attachmentId = $this->fetchValue($field);
+        $attachmentId = $this->fetchValue();
 
         $connection = $this->post->getConnectionName();
 
@@ -114,7 +114,7 @@ class Image extends BasicField implements FieldInterface
      */
     protected function fillThumbnailFields(array $data)
     {
-        $size = new static($this->post);
+        $size = new static($this->post, '');
         $size->filename = $data['file'];
         $size->width = $data['width'];
         $size->height = $data['height'];
@@ -133,11 +133,8 @@ class Image extends BasicField implements FieldInterface
      */
     protected function fetchMetadataValue(Post $attachment)
     {
-        $meta = PostMeta::where('post_id', $attachment->ID)
-                        ->where('meta_key', '_wp_attachment_metadata')
-                        ->first();
-
-        return unserialize($meta->meta_value);
+        $meta = $attachment->meta->{'_wp_attachment_metadata'};
+        return unserialize($meta);
     }
 
     /**

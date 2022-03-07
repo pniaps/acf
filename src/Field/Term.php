@@ -2,7 +2,6 @@
 
 namespace Corcel\Acf\Field;
 
-use Corcel\Acf\FieldInterface;
 use Corcel\Model\Post;
 use Illuminate\Support\Collection;
 
@@ -11,7 +10,7 @@ use Illuminate\Support\Collection;
  *
  * @author Junior Grossi <juniorgro@gmail.com>
  */
-class Term extends BasicField implements FieldInterface
+class Term extends BasicField
 {
     /**
      * @var mixed
@@ -26,9 +25,9 @@ class Term extends BasicField implements FieldInterface
     /**
      * @param Post $post
      */
-    public function __construct(Post $post)
+    public function __construct(Post $post, string $name)
     {
-        parent::__construct($post);
+        parent::__construct($post, $name);
         $this->term = new \Corcel\Model\Term();
         $this->term->setConnection($post->getConnectionName());
     }
@@ -36,9 +35,9 @@ class Term extends BasicField implements FieldInterface
     /**
      * @param string $fieldName
      */
-    public function process($fieldName)
+    public function process()
     {
-        $value = $this->fetchValue($fieldName);
+        $value = $this->fetchValue();
         if (is_array($value)) {
             $this->items = $this->term->whereIn('term_id', $value)->get(); // ids
         } else {

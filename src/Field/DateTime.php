@@ -11,7 +11,7 @@ use Corcel\Model\Post;
  *
  * @author Junior Grossi <juniorgro@gmail.com>
  */
-class DateTime extends BasicField implements FieldInterface
+class DateTime extends BasicField
 {
     /**
      * @var Carbon
@@ -21,9 +21,9 @@ class DateTime extends BasicField implements FieldInterface
     /**
      * @param string $fieldName
      */
-    public function process($fieldName)
+    public function process()
     {
-        $dateString = $this->fetchValue($fieldName);
+        $dateString = $this->fetchValue();
         $format = $this->getDateFormatFromString($dateString);
         $this->date = Carbon::createFromFormat($format, $dateString);
     }

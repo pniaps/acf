@@ -2,7 +2,6 @@
 
 namespace Corcel\Acf\Field;
 
-use Corcel\Acf\FieldInterface;
 use Corcel\Model\Post;
 
 /**
@@ -10,7 +9,7 @@ use Corcel\Model\Post;
  *
  * @author Junior Grossi <juniorgro@gmail.com>
  */
-class File extends BasicField implements FieldInterface
+class File extends BasicField
 {
     /**
      * @var string
@@ -50,9 +49,9 @@ class File extends BasicField implements FieldInterface
     /**
      * @param string $field
      */
-    public function process($field)
+    public function process()
     {
-        $value = $this->fetchValue($field);
+        $value = $this->fetchValue();
 
         $connection = $this->post->getConnectionName();
 

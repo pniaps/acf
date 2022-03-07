@@ -2,7 +2,6 @@
 
 namespace Corcel\Acf\Field;
 
-use Corcel\Acf\FieldInterface;
 use Corcel\Model\Post;
 
 /**
@@ -10,7 +9,7 @@ use Corcel\Model\Post;
  *
  * @author Junior Grossi <juniorgro@gmail.com>
  */
-class PostObject extends BasicField implements FieldInterface
+class PostObject extends BasicField
 {
     /**
      * @var Post
@@ -20,11 +19,11 @@ class PostObject extends BasicField implements FieldInterface
     /**
      * @param string $fieldName
      */
-    public function process($fieldName)
+    public function process()
     {
-        $postId = $this->fetchValue($fieldName);
+        $postId = $this->fetchValue();
         $connection = $this->post->getConnectionName();
-        
+
         if (is_array($postId)) {
             $this->object = Post::on($connection)->whereIn('ID', $postId)->get()->sortBy(function ($item) use ($postId) {
                 return array_search($item->getKey(), $postId);

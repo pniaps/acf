@@ -1,7 +1,7 @@
 <?php
 
-use Corcel\Acf\Field\Repeater;
 use Corcel\Acf\Field\FlexibleContent;
+use Corcel\Acf\Field\Repeater;
 use Corcel\Model\Post;
 
 /**
@@ -14,8 +14,8 @@ class LayoutFieldsTest extends PHPUnit\Framework\TestCase
     public function testRepeaterField()
     {
         $page = Post::find(73);
-        $repeater = new Repeater($page);
-        $repeater->process('fake_repeater');
+        $repeater = new Repeater($page, 'fake_repeater');
+        $repeater->process();
         $fields = $repeater->get()->toArray();
 
         $this->assertEquals('First text', $fields[0]['repeater_text']);
@@ -27,8 +27,8 @@ class LayoutFieldsTest extends PHPUnit\Framework\TestCase
     public function testComplexRepeaterField()
     {
         $page = Post::find(73);
-        $repeater = new Repeater($page);
-        $repeater->process('fake_repeater_2');
+        $repeater = new Repeater($page, 'fake_repeater_2');
+        $repeater->process();
         $fields = $repeater->get()->toArray();
 
 
@@ -43,8 +43,8 @@ class LayoutFieldsTest extends PHPUnit\Framework\TestCase
     public function testFlexibleContentField()
     {
         $page = Post::find(86);
-        $flex = new FlexibleContent($page);
-        $flex->process('fake_flexible_content');
+        $flex = new FlexibleContent($page, 'fake_flexible_content');
+        $flex->process();
         $layout = $flex->get();
 
         $this->assertEquals(3, $layout->count());

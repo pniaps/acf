@@ -3,17 +3,17 @@
 namespace Corcel\Acf\Field;
 
 use Corcel\Acf\FieldFactory;
-use Corcel\Acf\FieldInterface;
 use Corcel\Model;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use stdClass;
 
 /**
  * Class Flexible Content.
  *
  * @author Marco Boom <info@marcoboom.nl>
  */
-class FlexibleContent extends BasicField implements FieldInterface
+class FlexibleContent extends BasicField
 {
     /**
      * @var Collection
@@ -23,12 +23,10 @@ class FlexibleContent extends BasicField implements FieldInterface
     /**
      * @param string $fieldName
      */
-    public function process($fieldName)
+    public function process()
     {
-        $this->name = $fieldName;
-
-        $builder = $this->fetchPostsMeta($fieldName, $this->post);
-        $fields = $this->fetchFields($fieldName, $builder);
+        $builder = $this->fetchPostsMeta($this->name, $this->post);
+        $fields = $this->fetchFields($this->name, $builder);
 
         $this->fields = new Collection($fields);
     }
@@ -103,9 +101,9 @@ class FlexibleContent extends BasicField implements FieldInterface
             }
 
             if (empty($fields[$id])) {
-                $fields[$id] = new \stdClass;
+                $fields[$id] = new stdClass;
                 $fields[$id]->type = $blocks[$id];
-                $fields[$id]->fields =  new \stdClass;
+                $fields[$id]->fields =  new stdClass;
             }
 
             $fields[$id]->fields->$name = $field->get();

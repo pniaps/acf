@@ -65,53 +65,55 @@ class FieldFactory
             case 'select':
             case 'checkbox':
             case 'radio':
-                $field = new Text($post);
+                $field = new Text($post, $name);
                 break;
             case 'image':
             case 'img':
-                $field = new Image($post);
+                $field = new Image($post, $name);
                 break;
             case 'file':
-                $field = new File($post);
+                $field = new File($post, $name);
                 break;
             case 'gallery':
-                $field = new Gallery($post);
+                $field = new Gallery($post, $name);
                 break;
             case 'true_false':
             case 'boolean':
-                $field = new Boolean($post);
+                $field = new Boolean($post, $name);
                 break;
             case 'post_object':
             case 'post':
             case 'relationship':
-                $field = new PostObject($post);
+                $field = new PostObject($post, $name);
                 break;
             case 'page_link':
-                $field = new PageLink($post);
+                $field = new PageLink($post, $name);
                 break;
             case 'taxonomy':
             case 'term':
-                $field = new Term($post);
+                $field = new Term($post, $name);
                 break;
             case 'user':
-                $field = new User($post);
+                $field = new User($post, $name);
                 break;
             case 'date_picker':
             case 'date_time_picker':
             case 'time_picker':
-                $field = new DateTime($post);
+                $field = new DateTime($post, $name);
                 break;
             case 'repeater':
-                $field = new Repeater($post);
+                $field = new Repeater($post, $name);
                 break;
             case 'flexible_content':
-                $field = new FlexibleContent($post);
+                $field = new FlexibleContent($post, $name);
                 break;
             default:
-                throw new \InvalidArgumentException('The field type ['.$type.'] is invalid');
+                throw new InvalidArgumentException('The field type ['.$type.'] is invalid');
         }
 
-        $field->process($name);
+        $field->process();
+
+        $field->setFieldType($type);
 
         return $field;
     }
