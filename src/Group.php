@@ -3,7 +3,9 @@
 namespace Corcel\Acf;
 
 use Corcel\Model\Post;
+use ErrorException;
 use Illuminate\Support\Carbon;
+use InvalidArgumentException;
 
 /**
  * ACF Group Class
@@ -14,6 +16,8 @@ class Group extends Post
 
     protected $with = [];
 
+    protected $fields = null;
+
     /**
      * Returns all the fields for the group
      *
@@ -21,24 +25,27 @@ class Group extends Post
      */
     public function fields()
     {
-        $fields = [];
-        Post::on($this->getConnectionName())
-            ->without('meta')
-            ->orWhere(function ($query) {
-                $query->where('post_parent', $this->ID);
-                $query->where('post_type', 'acf-field');
-            })->each(function ($post) use (&$fields) {
-                $fieldData                   = unserialize($post->post_content);
-                $type                        = isset($fieldData['type']) ? $fieldData['type'] : 'text';
-                $fields[$post->post_excerpt] = [
-                    'type' => $type,
-                    'title' => $post->post_title,
-                    'name' => $post->post_excerpt,
-                    'field' => $post->post_name,
-                    'definition' => $fieldData
-                ];
-            });
-        return $fields;
+        if(is_null($this->fields)){
+            $this->fields = [];
+            Post::on($this->getConnectionName())
+                ->without('meta')
+                ->orWhere(function ($query) {
+                    $query->where('post_parent', $this->ID);
+                    $query->where('post_type', 'acf-field');
+                })->each(function ($post){
+                    $fieldData                   = unserialize($post->post_content);
+                    $type                        = isset($fieldData['type']) ? $fieldData['type'] : 'text';
+                    $this->fields[$post->post_excerpt] = [
+                        'type' => $type,
+                        'title' => $post->post_title,
+                        'name' => $post->post_excerpt,
+                        'field' => $post->post_name,
+                        'definition' => $fieldData
+                    ];
+                });
+
+        }
+        return $this->fields;
     }
 
     /**
@@ -68,12 +75,12 @@ class Group extends Post
     public function savePostFields(Post $post, array $fields)
     {
         if (!$post->exists) {
-            throw new \ErrorException("Can't save ACF fields. Please, save post first.");
+            throw new ErrorException("Can't save ACF fields. Please, save post first.");
         }
         $groupFields = $this->fields();
         foreach ($fields as $name => $value) {
             if (!isset($groupFields[$name])) {
-                throw new \InvalidArgumentException('ACF group [' . $this->post_title . '] does not have field [' . $name . ']');
+                throw new InvalidArgumentException('ACF group [' . $this->post_title . '] does not have field [' . $name . ']');
             }
             $field = $groupFields[$name];
 
