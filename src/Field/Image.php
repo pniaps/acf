@@ -199,6 +199,10 @@ class Image extends BasicField
 
             $value = $response->json('id');
         }
+        if($value == $this->url){
+            //dont change value if the same
+            return;
+        }
         parent::update($value);
     }
 }

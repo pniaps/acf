@@ -47,6 +47,8 @@ class DateTime extends BasicField
             return 'Y-m-d H:i:s';
         } elseif (preg_match('/^\d{2}:\d{2}:\d{2}$/', $dateString)) { // 17:30:00
             return 'H:i:s';
+        } elseif (preg_match('/^\d{2}:\d{2}$/', $dateString)) { // 17:30
+            return 'H:i';
         }
     }
 
