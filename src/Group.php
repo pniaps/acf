@@ -29,6 +29,7 @@ class Group extends Post
             $this->fields = [];
             Post::on($this->getConnectionName())
                 ->without('meta')
+                ->orderBy('menu_order')
                 ->orWhere(function ($query) {
                     $query->where('post_parent', $this->ID);
                     $query->where('post_type', 'acf-field');
