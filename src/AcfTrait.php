@@ -24,14 +24,33 @@ trait AcfTrait
         return $this->acfgroup;
     }
 
-    public function getAcfField($name = null)
+    protected function loadFieldsIfNotLoaded()
     {
         if (is_null($this->acf_fields)) {
             $this->acf_fields = [];
             foreach ($this->group()->fields() as $field) {
                 $this->acf_fields[$field['name']] = FieldFactory::make($field['name'], $this, $field['type']);
+                if(!$this->meta->{'_' . $field['name']}){
+                    $meta = $this->meta->first(function ($meta) use ($field) {
+                        return $meta->meta_key === '_'.$field['name'];
+                    });
+                    if ($meta) {
+                        $meta->update(['meta_value' => $field['field']]);
+                    } else {
+                        $this->meta()->create([
+                            'meta_key' => '_'.$field['name'],
+                            'meta_value' => $field['field'],
+                        ]);
+                    }
+                }
             }
         }
+
+    }
+
+    public function getAcfField($name = null)
+    {
+        $this->loadFieldsIfNotLoaded();
         if ($name && $this->acf_fields && $this->acf_fields[$name]) {
             return $this->acf_fields[$name]->get();
         }
@@ -50,12 +69,7 @@ trait AcfTrait
         if (!$this->exists) {
             throw new ErrorException("Can't save ACF fields. Please, save post first.");
         }
-        if (is_null($this->acf_fields)) {
-            $this->acf_fields = [];
-            foreach ($this->group()->fields() as $field) {
-                $this->acf_fields[$field['name']] = FieldFactory::make($field['name'], $this, $field['type']);
-            }
-        }
+        $this->loadFieldsIfNotLoaded();
         foreach ($fields as $name => $value) {
             if (!isset($this->acf_fields[$name])) {
                 throw new InvalidArgumentException('ACF group [' . $this->post_title . '] does not have field [' . $name . ']');

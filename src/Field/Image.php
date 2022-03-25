@@ -190,6 +190,10 @@ class Image extends BasicField
                 ->withBasicAuth(env('WORDPRESS_API_USERNAME'),env('WORDPRESS_API_PASSWORD'))
                 ->post(env('WORDPRESS_API_ENDPOINT'));
 
+            if($response->status() != 201){
+                throw new \ErrorException('Image could not be uploaded for field ['.$this->name.']');
+            }
+
             // 4. Delete local image after uploaded to wordpress
             File::delete($path);
 

@@ -100,6 +100,9 @@ abstract class BasicField implements FieldInterface
 
     public function update($value)
     {
+        if(!$this->key){
+            throw new \ErrorException('Field ['.$this->name.'] doest not has key');
+        }
         $this->value = $value;
         $this->createOrUpdatePostMeta($this->post, $this->name, $value);
         $this->createOrUpdatePostMeta($this->post, '_' . $this->name, $this->key);
