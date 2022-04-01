@@ -29,7 +29,6 @@ trait AcfTrait
         if (is_null($this->acf_fields)) {
             $this->acf_fields = [];
             foreach ($this->group()->fields() as $field) {
-                $this->acf_fields[$field['name']] = FieldFactory::make($field['name'], $this, $field['type']);
                 if(!$this->meta->{'_' . $field['name']}){
                     $meta = $this->meta->first(function ($meta) use ($field) {
                         return $meta->meta_key === '_'.$field['name'];
@@ -37,12 +36,10 @@ trait AcfTrait
                     if ($meta) {
                         $meta->update(['meta_value' => $field['field']]);
                     } else {
-                        $this->meta()->create([
-                            'meta_key' => '_'.$field['name'],
-                            'meta_value' => $field['field'],
-                        ]);
+                        $this->createMeta('_'.$field['name'], $field['field']);
                     }
                 }
+                $this->acf_fields[$field['name']] = FieldFactory::make($field['name'], $this, $field['type']);
             }
         }
 
