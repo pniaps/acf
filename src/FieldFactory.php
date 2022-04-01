@@ -26,6 +26,8 @@ use InvalidArgumentException;
  */
 class FieldFactory
 {
+    static $customTypes = [];
+
     private function __construct()
     {
     }
@@ -108,7 +110,11 @@ class FieldFactory
                 $field = new FlexibleContent($post, $name);
                 break;
             default:
-                throw new InvalidArgumentException('The field type ['.$type.'] is invalid');
+                if(static::$customTypes[$type]){
+                    $field = new static::$customTypes[$type]($post, $name);
+                }else{
+                    throw new InvalidArgumentException('The field type ['.$type.'] is invalid');
+                }
         }
 
         $field->process();
@@ -140,5 +146,10 @@ class FieldFactory
         }
 
         return null;
+    }
+
+    public static function registerCustomField($type, $class)
+    {
+        static::$customTypes[$type] = $class;
     }
 }
